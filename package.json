@@ -1,0 +1,9 @@
+{
+  "name": "ambit-demo",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "24.x",
+    "ambit-ts": "0.2.0"
+  }
+}

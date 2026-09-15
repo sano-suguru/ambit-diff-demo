@@ -1,0 +1,24 @@
+name: Ambit advisory review
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  ambit:
+    name: ambit diff (advisory, non-blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2 # `diff` needs the base commit
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci
+      # Exit 1 (authority increased) passes; exit 2 (could not compare) still fails.
+      - name: Authority diff to job summary (advisory)
+        run: |
+          npx ambit diff HEAD~1 src > ambit-diff.txt || [ $? -eq 1 ]
+          cat ambit-diff.txt
+          { echo '```text'; cat ambit-diff.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Authority diff annotations (advisory)
+        run: npx ambit diff HEAD~1 src --format github || [ $? -eq 1 ]
